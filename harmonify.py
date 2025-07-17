@@ -79,15 +79,29 @@ class Harmonify:
     @staticmethod
     def create_method(target_class: type, method_name: str, body: "Harmonify.ReplaceFnType") -> bool:
         """
-        Creates and binds a new method on a class.
+        Creates a new method on a class.
         
         Args:
             `target_class`: The class that the method is being added on.
             `method_name`: The name of the method that is being added.
             `body`: The body of the method.
         """
-        bound_method = types.MethodType(body, target_class)
-        setattr(target_class, method_name, bound_method)
+        # No need to actually do any bounding to classes (not that we have anything to bound *to* XD)
+        # A normal setattr() works too!
+        setattr(target_class, method_name, body)
+        return True
+    
+
+    @staticmethod
+    def delete_method(target_class: type, method_name: str) -> bool:
+        """
+        Deletes a method on a class.
+        
+        Args:
+            `target_class`: The class that the method is being deleted from.
+            `method_name`: The name of the method that is being deleted.
+        """
+        delattr(target_class, method_name)
         return True
     
     ##===========================================================================================##
