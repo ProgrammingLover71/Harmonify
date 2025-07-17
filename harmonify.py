@@ -1,3 +1,5 @@
+import inspect
+import sys
 import types
 from typing import Callable, Any
 
@@ -7,8 +9,8 @@ class Harmonify:
 
 
     @staticmethod
-    def patch(
-        target: Any, 
+    def patch_method(
+        target_class: type, 
         method_name: str = "__init__", 
         prefix:  "Harmonify.PrefixFnType  | None" = None, 
         postfix: "Harmonify.PostfixFnType | None" = None, 
@@ -18,19 +20,19 @@ class Harmonify:
         Patches a method of a class.
 
         Args:
-            `target`: The class/module whose method/functions is to be patched.
-            `method_name`: The name of the method/function to be patched (as a string). If not provided, it defaults to "__init__".
-            `prefix`: A function to run *before* the original method/function. (optional)
-            `postfix`: A function to run *after* the original method/function. (optional)
-            `replace`: A function to completely *replace* the original method/function. (optional)
+            `target_class`: The class whose method is to be patched.
+            `method_name`: The name of the method to be patched (as a string). If not provided, it defaults to "__init__".
+            `prefix`: A function to run *before* the original method. (optional)
+            `postfix`: A function to run *after* the original method. (optional)
+            `replace`: A function to completely *replace* the original method. (optional)
         """
-        original_method = getattr(target, method_name, None)
+        original_method = getattr(target_class, method_name, None)
         if not callable(original_method):
             return False
 
         # Store the original method so we can restore it later
         # We'll use a unique key for each patched method
-        patch_key = (target, method_name)
+        patch_key = (target_class, method_name)
         if patch_key not in Harmonify._patches:
             Harmonify._patches[patch_key] = original_method
 
@@ -71,9 +73,60 @@ class Harmonify:
             return result
 
         # Replace the original method on the class
-        setattr(target, method_name, patched_method)
+        setattr(target_class, method_name, patched_method)
         return True
     
+    ##===========================================================================================##
+
+    @staticmethod
+    def patch_function(
+        target_module: Any,
+        function_name: str,
+        prefix:  "Harmonify.PrefixFnType  | None" = None,
+        postfix: "Harmonify.PostfixFnType | None" = None,
+        replace: "Harmonify.ReplaceFnType | None" = None
+    ) -> bool:
+        """
+        Patches a standalone function in a module.
+
+        Args:
+            `target_module`: The module object where the function is defined.
+            `function_name`: The name of the function to patch.
+            `prefix`: A function to run *before* the original function.
+            `postfix`: A function to run *after* the original function.
+            `replace`: A function to completely *replace* the original function.
+        """
+        original_function = getattr(target_module, function_name, None)
+        if not callable(original_function):
+            return False
+
+        patch_key = (target_module, function_name)
+        if patch_key not in Harmonify._patches:
+            Harmonify._patches[patch_key] = original_function
+
+        def patched_function(*args, **kwds):
+            flow_state = Harmonify.FlowControl.CONTINUE_EXEC
+            result = None
+
+            if replace:
+                return replace(*args, **kwds)
+            # Call the prefix
+            if prefix:
+                result, flow_state = prefix(*args, **kwds)
+            # Call the original
+            if flow_state != Harmonify.FlowControl.STOP_EXEC:
+                result = original_function(*args, **kwds)
+            # Call the postfix
+            if postfix and flow_state == Harmonify.FlowControl.CONTINUE_EXEC:
+                modified_result = postfix(result, *args, **kwds)
+                return modified_result
+
+            return result
+
+        setattr(target_module, function_name, patched_function)
+        return True
+
+
     ##===========================================================================================##
 
     @staticmethod
@@ -124,7 +177,7 @@ class Harmonify:
         patch_create = patch.create
         patch_delete = patch.delete
         # Apply the main patch(es)
-        patch_success = Harmonify.patch(target_class, method_name, patch_prefix, patch_postfix, patch_replace)
+        patch_success = Harmonify.patch_method(target_class, method_name, patch_prefix, patch_postfix, patch_replace)
 
         create_success = True
         delete_success = True
@@ -138,14 +191,14 @@ class Harmonify:
 
 
     @staticmethod
-    def unpatch(target: Any, method_name: str = "__init__") -> bool:
+    def unpatch(target_class: type, method_name: str = "__init__") -> bool:
         """
-        Restores a patched method/function to its original state.
+        Restores a patched method to its original state.
         """
-        patch_key = (target, method_name)
+        patch_key = (target_class, method_name)
         if patch_key in Harmonify._patches:
             original_method = Harmonify._patches.pop(patch_key)
-            setattr(target, method_name, original_method)
+            setattr(target_class, method_name, original_method)
         return True
     
     ##===========================================================================================##
@@ -176,3 +229,24 @@ class Harmonify:
     type ReplaceFnType = Callable[..., Any]
 
     ##===========================================================================================##
+
+    @staticmethod
+    def get_current_module() -> types.ModuleType | None:
+        """
+        Returns the module object of the immediate caller (i.e., the module from which this function is called).
+        """
+        frame = inspect.currentframe()
+        if frame is None:
+            return None
+
+        try:
+            caller_frame = frame.f_back
+            module_name = caller_frame.f_globals.get("__name__")
+            if module_name:
+                return sys.modules.get(module_name)
+            return None
+        finally:
+            # Clean up frame references to avoid reference cycles
+            del frame
+            del caller_frame
+
