@@ -17,13 +17,16 @@ class Harmonify:
         Patches a method of a class.
 
         Args:
-            target_class: The class whose method is to be patched.
-            method_name: The name of the method to be patched (as a string). If not provided, it defaults to "__init__".
-            prefix: A function to run *before* the original method. (optional)
-            postfix: A function to run *after* the original method. (optional)
-            replace: A function to completely *replace* the original method. (optional)
+            `target_class`: The class whose method is to be patched.
+            `method_name`: The name of the method to be patched (as a string). If not provided, it defaults to "__init__".
+            `prefix`: A function to run *before* the original method. (optional)
+            `postfix`: A function to run *after* the original method. (optional)
+            `replace`: A function to completely *replace* the original method. (optional)
+            * If the method that's being patched doesn't exist and the `replace` hook is provided, the `replace` hook will be used to create a new method.
         """
-        original_method = getattr(target_class, method_name)
+        original_method = getattr(target_class, method_name, None)
+        if original_method is None:
+            original_method = replace   # Use `replace` as the original function if it doesn't exist
 
         if not callable(original_method):
             raise TypeError(f"'{method_name}' is not a callable method on {target_class.__name__}")
@@ -79,9 +82,9 @@ class Harmonify:
         Applies a Harmonify patch to a method of a class.
         
         Args:
-            patch: The `Harmonify.Patch` that is to be applied.
-            target_class: The class whose method is to be patched. If not provided, it defaults to "__init__".
-            method_name: The name of the method to be patched. (as a string)
+            `patch`: The `Harmonify.Patch` that is to be applied.
+            `target_class`: The class whose method is to be patched. If not provided, it defaults to "__init__".
+            `method_name`: The name of the method to be patched. (as a string)
         """
         patch_prefix = patch.prefix
         patch_postfix = patch.postfix
