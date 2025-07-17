@@ -3,7 +3,7 @@ from typing import Callable, Any
 
 
 class Harmonify:
-    _patches = {} # To store original methods and their patches
+    _patches = {}   # To store original methods and their patches
 
 
     @staticmethod
@@ -101,6 +101,7 @@ class Harmonify:
             `target_class`: The class that the method is being deleted from.
             `method_name`: The name of the method that is being deleted.
         """
+        # deleting is as simple as a delattr() call
         delattr(target_class, method_name)
         return True
     
