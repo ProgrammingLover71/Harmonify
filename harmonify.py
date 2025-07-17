@@ -8,11 +8,11 @@ class Harmonify:
     @staticmethod
     def patch(
         target_class: type, 
-        method_name: str, 
+        method_name: str = "__init__", 
         prefix:  "Harmonify.PrefixFnType  | None" = None, 
         postfix: "Harmonify.PostfixFnType | None" = None, 
         replace: "Harmonify.ReplaceFnType | None" = None
-    ):
+    ) -> bool:
         """
         Patches a method of a class.
 
@@ -22,14 +22,10 @@ class Harmonify:
             `prefix`: A function to run *before* the original method. (optional)
             `postfix`: A function to run *after* the original method. (optional)
             `replace`: A function to completely *replace* the original method. (optional)
-            * If the method that's being patched doesn't exist and the `replace` hook is provided, the `replace` hook will be used to create a new method.
         """
         original_method = getattr(target_class, method_name, None)
-        if original_method is None:
-            original_method = replace   # Use `replace` as the original function if it doesn't exist
-
         if not callable(original_method):
-            raise TypeError(f"'{method_name}' is not a callable method on {target_class.__name__}")
+            return False
 
         # Store the original method so we can restore it later
         # We'll use a unique key for each patched method
@@ -75,9 +71,26 @@ class Harmonify:
 
         # Replace the original method on the class
         setattr(target_class, method_name, patched_method)
+        return True
     
+
     @staticmethod
-    def apply(patch: "Harmonify.Patch", target_class: type, method_name: str = "__init__"):
+    def create_method(target_class: type, method_name: str, body: "Harmonify.ReplaceFnType") -> bool:
+        """
+        Creates and binds a new method on a class.
+        
+        Args:
+            `target_class`: The class that the method is being added on.
+            `method_name`: The name of the method that is being added.
+            `body`: The body of the method.
+        """
+        bound_method = types.MethodType(body, target_class)
+        setattr(target_class, method_name, bound_method)
+        return True
+    
+
+    @staticmethod
+    def apply(patch: "Harmonify.Patch", target_class: type, method_name: str = "__init__") -> bool:
         """
         Applies a Harmonify patch to a method of a class.
         
@@ -89,10 +102,11 @@ class Harmonify:
         patch_prefix = patch.prefix
         patch_postfix = patch.postfix
         patch_replace = patch.replace
-        Harmonify.patch(target_class, method_name, patch_prefix, patch_postfix, patch_replace)
+        return Harmonify.patch(target_class, method_name, patch_prefix, patch_postfix, patch_replace)
+
 
     @staticmethod
-    def unpatch(target_class: type, method_name: str = "__init__"):
+    def unpatch(target_class: type, method_name: str = "__init__") -> bool:
         """
         Restores a patched method to its original state.
         """
@@ -100,6 +114,7 @@ class Harmonify:
         if patch_key in Harmonify._patches:
             original_method = Harmonify._patches.pop(patch_key)
             setattr(target_class, method_name, original_method)
+        return True
     
 
     class FlowControl:
