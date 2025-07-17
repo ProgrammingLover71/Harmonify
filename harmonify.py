@@ -34,7 +34,7 @@ class Harmonify:
         if patch_key not in Harmonify._patches:
             Harmonify._patches[patch_key] = original_method
 
-        def patched_method(instance, *args, **kwargs):
+        def patched_method(instance, *args, **kwds):
             flow_state = Harmonify.FlowControl.CONTINUE_EXEC   # Assume that we're continuing the execution
             result = None
 
@@ -46,26 +46,26 @@ class Harmonify:
                 # We need to bind 'replace' to the instance so it acts like a method
                 # This makes 'self' work inside the replacement function
                 bound_replace = types.MethodType(replace, instance)
-                return bound_replace(*args, **kwargs)
+                return bound_replace(*args, **kwds)
 
             # Call the prefix function if it exists
             if prefix:
                 # Pass instance, original method, and arguments to prefix
                 # Prefix can modify arguments or even return a result to skip the original or both original and postfix.
                 bound_prefix = types.MethodType(prefix, instance)
-                result, flow_state = bound_prefix(*args, **kwargs)
+                result, flow_state = bound_prefix(*args, **kwds)
 
             if flow_state != Harmonify.FlowControl.STOP_EXEC:
                 # Call the original method
                 # We use the stored original_method
-                result = types.MethodType(original_method, instance)(*args, **kwargs)
+                result = types.MethodType(original_method, instance)(*args, **kwds)
 
             # Call the postfix function if it exists
             if postfix and flow_state == Harmonify.FlowControl.CONTINUE_EXEC:
                 # Pass instance, original method, and result to postfix
                 # Postfix can modify the result
                 bound_postfix = types.MethodType(postfix, instance)
-                modified_result = bound_postfix(result, *args, **kwargs)
+                modified_result = bound_postfix(result, *args, **kwds)
                 return modified_result
             
             return result
