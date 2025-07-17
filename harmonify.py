@@ -35,7 +35,7 @@ class Harmonify:
             Harmonify._patches[patch_key] = original_method
 
         def patched_method(instance, *args, **kwargs):
-            flow = "continue"
+            flow_state = Harmonify.FlowControl.CONTINUE_EXEC   # Assume that we're continuing the execution
             result = None
 
             # This is the new method that will replace the original
@@ -53,15 +53,15 @@ class Harmonify:
                 # Pass instance, original method, and arguments to prefix
                 # Prefix can modify arguments or even return a result to skip the original or both original and postfix.
                 bound_prefix = types.MethodType(prefix, instance)
-                result, flow = bound_prefix(*args, **kwargs)
+                result, flow_state = bound_prefix(*args, **kwargs)
 
-            if flow != Harmonify.FlowControl.STOP_EXEC:
+            if flow_state != Harmonify.FlowControl.STOP_EXEC:
                 # Call the original method
                 # We use the stored original_method
                 result = types.MethodType(original_method, instance)(*args, **kwargs)
 
             # Call the postfix function if it exists
-            if postfix and flow == Harmonify.FlowControl.CONTINUE_EXEC:
+            if postfix and flow_state == Harmonify.FlowControl.CONTINUE_EXEC:
                 # Pass instance, original method, and result to postfix
                 # Postfix can modify the result
                 bound_postfix = types.MethodType(postfix, instance)
