@@ -1,8 +1,8 @@
 # Harmonify
 
-Harmonify is a Python library that lets you easily modify and manage the behavior of class methods during your program's runtime. Think of it as a toolkit to "patch" into existing code, allowing you to run your own functions before, after, or instead of the original method, all without touching the original source code.
-
-It's particularly useful for:
+Harmonify is a Python library that allows users to change the behavior of classes at runtime, with nothing more than a few function calls.
+Inspired by Harmony (the *very* popular C# library that also allows runtime behavior modification), Harmonify is flexible and uses a simple system.
+Like its C# equivalent, it can be used for:
 * **Debugging:** Inject logging or checks into methods without changing them permanently.
 * **Testing:** Isolate parts of your code by temporarily changing how certain methods behave.
 * **Extending Libraries:** Add new features or modify behavior of classes from libraries you can't edit directly.
@@ -21,4 +21,4 @@ Harmonify is designed to be a simple, standalone library for now. Just copy the 
 
 ```python
 # Coming soon:
-# pip install harmonify
+pip install harmonify
