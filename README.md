@@ -13,6 +13,7 @@ Like its C# equivalent, it can be used for:
 * **Prefix Patching:** Run your custom code *before* the original method executes.
 * **Postfix Patching:** Run your custom code *after* the original method executes, even allowing you to modify its return value.
 * **Replace Patching:** Completely swap out the original method's logic with your own.
+* **Create & Delete methods:** Add or remove methods from a class or a module, without changing the other ones.
 * **Easy Unpatching:** Restore methods to their original state with a simple call.
 
 ## Installation
