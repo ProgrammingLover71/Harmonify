@@ -5,6 +5,7 @@ from typing import Callable, Any
 class Harmonify:
     _patches = {} # To store original methods and their patches
 
+
     @staticmethod
     def patch(
         target_class: type, 
@@ -73,6 +74,7 @@ class Harmonify:
         setattr(target_class, method_name, patched_method)
         return True
     
+    ##===========================================================================================##
 
     @staticmethod
     def create_method(target_class: type, method_name: str, body: "Harmonify.ReplaceFnType") -> bool:
@@ -88,6 +90,7 @@ class Harmonify:
         setattr(target_class, method_name, bound_method)
         return True
     
+    ##===========================================================================================##
 
     @staticmethod
     def apply(patch: "Harmonify.Patch", target_class: type, method_name: str = "__init__") -> bool:
@@ -116,6 +119,7 @@ class Harmonify:
             setattr(target_class, method_name, original_method)
         return True
     
+    ##===========================================================================================##
 
     class FlowControl:
         # Continue executing original & postfix
@@ -125,6 +129,7 @@ class Harmonify:
         # Don't execute anything else
         STOP_EXEC = "stop"
     
+    ##===========================================================================================##
 
     class Patch:
         # All patch functions
@@ -132,6 +137,7 @@ class Harmonify:
         postfix: "Harmonify.PostfixFnType | None"
         replace: "Harmonify.ReplaceFnType | None"
     
+    ##===========================================================================================##
 
     # Function type defnitions: prefix, postfix and replace.
     type PrefixFnType = Callable[..., tuple[Any, Any]]
