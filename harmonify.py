@@ -116,10 +116,24 @@ class Harmonify:
             `target_class`: The class whose method is to be patched. If not provided, it defaults to "__init__".
             `method_name`: The name of the method to be patched. (as a string)
         """
+        # Retrieve the patches into local variables
         patch_prefix = patch.prefix
         patch_postfix = patch.postfix
         patch_replace = patch.replace
-        return Harmonify.patch(target_class, method_name, patch_prefix, patch_postfix, patch_replace)
+        patch_create = patch.create
+        patch_delete = patch.delete
+        # Apply the main patch(es)
+        patch_success = Harmonify.patch(target_class, method_name, patch_prefix, patch_postfix, patch_replace)
+
+        create_success = True
+        delete_success = True
+        # Apply the creation/deletion patch(es)
+        if patch_create[1]:
+            create_success = Harmonify.create_method(target_class, patch_create[0], patch_create[1])
+        if patch_delete:
+            delete_success = Harmonify.delete_method(target_class, patch_delete)
+        # Return true if all patches succeed
+        return patch_success and create_success and delete_success
 
 
     @staticmethod
@@ -150,6 +164,8 @@ class Harmonify:
         prefix:  "Harmonify.PrefixFnType  | None"
         postfix: "Harmonify.PostfixFnType | None"
         replace: "Harmonify.ReplaceFnType | None"
+        create:  tuple[str, "Harmonify.ReplaceFnType | None"]
+        delete:  str | None
     
     ##===========================================================================================##
 
