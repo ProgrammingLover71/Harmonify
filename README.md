@@ -1,7 +1,7 @@
 # Harmonify
 
 Harmonify is a Python library that allows users to change the behavior of classes at runtime, with nothing more than a few function calls.
-Inspired by Harmony (the *very* popular C# library that also allows runtime behavior modification), Harmonify is flexible and uses a simple system.
+Inspired by Harmony (the *very* popular C# library that also allows runtime behavior modification), Harmonify is flexible and uses a simple system based on monkey-patching.
 Like its C# equivalent, it can be used for:
 * **Debugging:** Inject logging or checks into methods without changing them permanently.
 * **Testing:** Isolate parts of your code by temporarily changing how certain methods behave.
