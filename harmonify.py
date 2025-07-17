@@ -174,3 +174,7 @@ class Harmonify:
     type PrefixFnType = Callable[..., tuple[Any, Any]]
     type PostfixFnType = Callable[..., Any]
     type ReplaceFnType = Callable[..., Any]
+
+    ##===========================================================================================##
+
+    ## TODO: Implement *function* patching!
