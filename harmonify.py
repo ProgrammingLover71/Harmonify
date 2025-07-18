@@ -233,7 +233,8 @@ class Harmonify:
     @staticmethod
     def get_current_module() -> types.ModuleType | None:
         """
-        Returns the module object of the immediate caller (i.e., the module from which this function is called).
+        Returns the module object of the immediate caller (i.e., the module from which this function is called).<br>
+        Returns `None` if not possible.
         """
         frame = inspect.currentframe()
         if frame is None:
