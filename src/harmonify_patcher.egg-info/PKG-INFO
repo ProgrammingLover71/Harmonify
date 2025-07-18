@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: harmonify-patcher
-Version: 1.1.0
+Version: 1.1.1
 Summary: Method behavior modification at runtime, made easy.
 Author-email: Wind Rider <abcbcalol69@gmail.com>
 License: MIT License
@@ -55,8 +55,9 @@ Like its C# equivalent, it can be used for:
 
 ## Installation
 
-Harmonify is designed to be a simple, standalone library for now. Just copy the `harmonify.py` file (or the relevant class definition) into your project!
+Installing Harmonify is as easy as using `pip`:
 
-```python
-# Coming soon:
+```shell
 pip install harmonify
+```
+After that, Harmonify will be available globally!

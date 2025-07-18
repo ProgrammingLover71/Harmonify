@@ -3,4 +3,4 @@ from .flow_control import *
 from .func_types import *
 from .patch import *
 
-version = "1.0.0"
+version = "1.1.1"
