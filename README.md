@@ -20,6 +20,5 @@ Like its C# equivalent, it can be used for:
 
 Harmonify is designed to be a simple, standalone library for now. Just copy the `harmonify.py` file (or the relevant class definition) into your project!
 
-```python
-# Coming soon:
+```shell
 pip install harmonify
