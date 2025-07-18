@@ -1,6 +1,6 @@
 import types
-import flow_control
-from func_types import *
+from .flow_control import CONTINUE_EXEC, CONTINUE_WITHOUT_POSTFIX, STOP_EXEC
+from .func_types import *
 
 
 
@@ -36,7 +36,7 @@ def patch_method(
 		_patches[patch_key] = original_method
 
 	def patched_method(instance, *args, **kwds):
-		flow_state = flow_control.CONTINUE_EXEC   # Assume that we're continuing the execution
+		flow_state = CONTINUE_EXEC   # Assume that we're continuing the execution
 		result = None
 
 		# This is the new method that will replace the original
@@ -54,15 +54,15 @@ def patch_method(
 			# Pass instance, original method, and arguments to prefix
 			# Prefix can modify arguments or even return a result to skip the original or both original and postfix.
 			bound_prefix = types.MethodType(prefix, instance)
-			result, flow_state = bound_prefix(*args, **kwds)
+			result, new_args, new_kwds, flow_state = bound_prefix(*args, **kwds)
 
-		if flow_state != flow_control.STOP_EXEC:
+		if flow_state != STOP_EXEC:
 			# Call the original method
 			# We use the stored original_method
-			result = types.MethodType(original_method, instance)(*args, **kwds)
+			result = types.MethodType(original_method, instance)(*new_args, **new_kwds)
 
 		# Call the postfix function if it exists
-		if postfix and flow_state == flow_control.CONTINUE_EXEC:
+		if postfix and flow_state == CONTINUE_EXEC:
 			# Pass instance, original method, and result to postfix
 			# Postfix can modify the result
 			bound_postfix = types.MethodType(postfix, instance)
@@ -103,19 +103,19 @@ def patch_function(
 		_patches[patch_key] = original_function
 
 	def patched_function(*args, **kwds):
-		flow_state = flow_control.CONTINUE_EXEC
+		flow_state = CONTINUE_EXEC
 		result = None
 
 		if replace:
 			return replace(*args, **kwds)
 		# Call the prefix
 		if prefix:
-			result, flow_state = prefix(*args, **kwds)
+			result, new_args, new_kwds, flow_state = prefix(*args, **kwds)
 		# Call the original
-		if flow_state != flow_control.STOP_EXEC:
-			result = original_function(*args, **kwds)
+		if flow_state != STOP_EXEC:
+			result = original_function(*new_args, **new_kwds)
 		# Call the postfix
-		if postfix and flow_state == flow_control.CONTINUE_EXEC:
+		if postfix and flow_state == CONTINUE_EXEC:
 			modified_result = postfix(result, *args, **kwds)
 			return modified_result
 

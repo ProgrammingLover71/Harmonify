@@ -1,5 +1,5 @@
-from func_types import *
-from core import patch_method, create_method, delete_method
+from .func_types import *
+from .core import patch_method, create_method, delete_method
 
 class Patch:
 	# All patch functions
