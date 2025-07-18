@@ -80,7 +80,7 @@ class Harmonify:
 
     @staticmethod
     def patch_function(
-        target_module: Any,
+        target_module: types.ModuleType,
         function_name: str,
         prefix:  "Harmonify.PrefixFnType  | None" = None,
         postfix: "Harmonify.PostfixFnType | None" = None,
@@ -191,7 +191,7 @@ class Harmonify:
 
 
     @staticmethod
-    def unpatch(target_class: type, method_name: str = "__init__") -> bool:
+    def unpatch_method(target_class: type, method_name: str = "__init__") -> bool:
         """
         Restores a patched method to its original state.
         """
@@ -199,7 +199,21 @@ class Harmonify:
         if patch_key in Harmonify._patches:
             original_method = Harmonify._patches.pop(patch_key)
             setattr(target_class, method_name, original_method)
-        return True
+            return True
+        return False
+
+
+    @staticmethod
+    def unpatch_function(target_module: types.ModuleType, method_name: str) -> bool:
+        """
+        Restores a patched method to its original state.
+        """
+        patch_key = (target_module, method_name)
+        if patch_key in Harmonify._patches:
+            original_method = Harmonify._patches.pop(patch_key)
+            setattr(target_module, method_name, original_method)
+            return True
+        return False
     
     ##===========================================================================================##
 
