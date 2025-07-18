@@ -39,6 +39,8 @@ def patch_method(
 		flow_state = CONTINUE_EXEC   # Assume that we're continuing the execution
 		result = None
 
+		new_args, new_kwds = args, kwds
+
 		# This is the new method that will replace the original
 		# It will handle calling prefix, original, and postfix
 
