@@ -21,6 +21,6 @@ Like its C# equivalent, it can be used for:
 Installing Harmonify is as easy as using `pip`:
 
 ```shell
-pip install harmonify
+pip install harmonify-patcher
 ```
 After that, Harmonify will be available globally!
