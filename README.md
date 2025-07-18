@@ -18,8 +18,9 @@ Like its C# equivalent, it can be used for:
 
 ## Installation
 
-Harmonify is designed to be a simple, standalone library for now. Just copy the `harmonify.py` file (or the relevant class definition) into your project!
+Installing Harmonify is as easy as using `pip`:
 
-```python
-# Coming soon:
+```shell
 pip install harmonify
+```
+After that, Harmonify will be available globally!
