@@ -1,0 +1,62 @@
+Metadata-Version: 2.4
+Name: harmonify-patcher
+Version: 1.1.0
+Summary: Method behavior modification at runtime, made easy.
+Author-email: Wind Rider <abcbcalol69@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2025 ProgrammingLover71
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/ProgrammingLover71/Harmonify
+Keywords: patcher,python,library
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# Harmonify
+
+Harmonify is a Python library that allows users to change the behavior of classes at runtime, with nothing more than a few function calls.
+Inspired by Harmony (the *very* popular C# library that also allows runtime behavior modification), Harmonify is flexible and uses a simple system based on monkey-patching.
+Like its C# equivalent, it can be used for:
+* **Debugging:** Inject logging or checks into methods without changing them permanently.
+* **Testing:** Isolate parts of your code by temporarily changing how certain methods behave.
+* **Extending Libraries:** Add new features or modify behavior of classes from libraries you can't edit directly.
+* **Experimentation:** Play around with how code runs in a non-destructive way.
+
+## Features
+
+* **Prefix Patching:** Run your custom code *before* the original method executes.
+* **Postfix Patching:** Run your custom code *after* the original method executes, even allowing you to modify its return value.
+* **Replace Patching:** Completely swap out the original method's logic with your own.
+* **Create & Delete methods:** Add or remove methods from a class or a module, without changing the other ones.
+* **Easy Unpatching:** Restore methods to their original state with a simple call.
+
+## Installation
+
+Harmonify is designed to be a simple, standalone library for now. Just copy the `harmonify.py` file (or the relevant class definition) into your project!
+
+```python
+# Coming soon:
+pip install harmonify
