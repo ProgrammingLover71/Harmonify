@@ -24,3 +24,35 @@ Installing Harmonify is as easy as using `pip`:
 pip install harmonify-patcher
 ```
 After that, Harmonify will be available globally!
+
+## Example Program
+
+### my_library.py
+```python
+def sqrt(x: float) -> float:
+  return x ** (1 / 2)
+
+def pow(x: float, n: int) -> float:
+  return x ** n
+
+def get_version():
+  return "1.0"
+```
+
+### main.py
+```python
+import harmonify
+import my_library
+
+def new_get_ver():
+  return "Latest release"
+
+print(my_library.get_version())   # 1.0
+harmonify.patch_function(
+  target_module = my_library,
+  function_name = "get_version",
+  replace = new_get_ver
+)
+print(my_library.get_version())   # Latest release
+```
+
