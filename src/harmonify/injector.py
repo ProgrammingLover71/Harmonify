@@ -2,6 +2,7 @@ import ast
 import inspect
 import textwrap
 import types
+from . import injector_security as sec
 
 _func_injections = {}
 _method_injections = {}
@@ -25,8 +26,11 @@ def inject_function(
         `code_to_inject`: The code snippet that will be injected.
     """
     target_function = getattr(target_module, function_name)
-    if hasattr(target_function, "no_inject") and getattr(target_function, "no_inject") == True:
+    if isinstance(target_function, sec.no_inject):
         return False
+    
+    if isinstance(target_function, sec.allow_inject):
+        target_function = target_function.func
     
     function_source = textwrap.dedent(inspect.getsource(target_function))
     function_ast = ast.parse(function_source)
@@ -86,8 +90,9 @@ def undo_func_inject(
         `function_name`: The name of the targeted function.
     """
     inject_key = (target_module, function_name)
-    original_function = _func_injections[inject_key][0]
-    setattr(target_module, function_name, original_function)
+    if inject_key in _func_injections:
+        original_function = _func_injections[inject_key][0]
+        setattr(target_module, function_name, original_function)
     return True
 
 
@@ -110,8 +115,11 @@ def inject_method(
         `code_to_inject`: The code snippet that will be injected.
     """
     target_method = getattr(target_class, method_name)
-    if hasattr(target_method, "no_inject") and getattr(target_method, "no_inject") == True:
+    if isinstance(target_method, sec.no_inject):
         return False
+    
+    if isinstance(target_method, sec.allow_inject):
+        target_method = target_method.func
 
     # Handle method wrappers
     is_classmethod = isinstance(inspect.getattr_static(target_class, method_name), classmethod)
@@ -180,8 +188,9 @@ def undo_method_inject(
         `method_name`: The name of the targeted method.
     """
     inject_key = (target_class, method_name)
-    original_method = _method_injections[inject_key][0]
-    setattr(target_class, method_name, original_method)
+    if inject_key in _method_injections:
+        original_method = _method_injections[inject_key][0]
+        setattr(target_class, method_name, original_method)
     return True
 
 
