@@ -6,6 +6,7 @@ src/harmonify/core.py
 src/harmonify/flow_control.py
 src/harmonify/func_types.py
 src/harmonify/injector.py
+src/harmonify/injector_security.py
 src/harmonify/patch.py
 src/harmonify_patcher.egg-info/PKG-INFO
 src/harmonify_patcher.egg-info/SOURCES.txt
