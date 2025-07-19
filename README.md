@@ -59,3 +59,7 @@ harmonify.patch_function(
 print(my_library.get_version())   # Latest release
 ```
 
+# Changelog
+
+## 1.2.2
+Fixed a problem where the code would be injected *before* the target line.

@@ -4,4 +4,4 @@ from .func_types import *
 from .patch import *
 from .injector import *
 
-version = "1.2.1"
+version = "1.2.2"
