@@ -1,6 +1,6 @@
-import types
 from .flow_control import CONTINUE_EXEC, CONTINUE_WITHOUT_POSTFIX, STOP_EXEC
 from .func_types import *
+import sys, inspect, types
 
 
 
@@ -181,3 +181,25 @@ def unpatch_function(target_module: types.ModuleType, method_name: str) -> bool:
 		setattr(target_module, method_name, original_method)
 		return True
 	return False
+
+
+
+def get_current_module() -> types.ModuleType | None:
+    """
+    Returns the module object of the immediate caller (i.e., the module from which this function is called).<br>
+    Returns `None` if not possible.
+    """
+    frame = inspect.currentframe()
+    if frame is None:
+        return None
+
+    try:
+        caller_frame = frame.f_back
+        module_name = caller_frame.f_globals.get("__name__")
+        if module_name:
+            return sys.modules.get(module_name)
+        return None
+    finally:
+        # Clean up frame references to avoid reference cycles
+        del frame
+        del caller_frame
