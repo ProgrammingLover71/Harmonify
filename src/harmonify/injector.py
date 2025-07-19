@@ -14,7 +14,9 @@ def inject_function(
     code_to_inject: str | None = None
 ):
     """
-    Inject the specified code snippet in the targeted function's source (at runtime).
+    Inject the specified code snippet in the targeted function's source (at runtime).<br>
+    If the function has a "no_inject" attribute set to True, then this will not do anything.<br>
+    **Note**: This is very dangerous and allows programmmers to run *unsandboxed code*!
     
     Args:
         `target_module`: The module in which the targeted function exists.
@@ -23,6 +25,9 @@ def inject_function(
         `code_to_inject`: The code snippet that will be injected.
     """
     target_function = getattr(target_module, function_name)
+    if hasattr(target_function, "no_inject") and getattr(target_function, "no_inject") == True:
+        return False
+    
     function_source = textwrap.dedent(inspect.getsource(target_function))
     function_ast = ast.parse(function_source)
 
@@ -94,7 +99,9 @@ def inject_method(
     code_to_inject: str | None = None
 ):
     """
-    Inject the specified code snippet in the targeted method's source (at runtime).
+    Inject the specified code snippet in the targeted method's source (at runtime).<br>
+    If the function has a "no_inject" attribute set to True, then this will not do anything.<br>
+    **Note**: This is very dangerous and allows programmmers to run *unsandboxed code*!
     
     Args:
         `target_module`: The module in which the targeted method exists.
@@ -103,6 +110,8 @@ def inject_method(
         `code_to_inject`: The code snippet that will be injected.
     """
     target_method = getattr(target_class, method_name)
+    if hasattr(target_method, "no_inject") and getattr(target_method, "no_inject") == True:
+        return False
 
     # Handle method wrappers
     is_classmethod = isinstance(inspect.getattr_static(target_class, method_name), classmethod)
