@@ -17,7 +17,7 @@ Like its C# equivalent, it can be used for:
 * **Easy Unpatching:** Restore methods to their original state with a simple call.
 * **Function patching:** Patch functions as easily as methods!
 * **Code Injection & Injection undo-ing:** Add you own code inside any Python function or method and revert at any time.
-  * *Note:* Be careful with code injection, as it is not safe-guarded... yet.
+  * *Note:* Be careful with code injection. If you're a library developer and want your code to not be injectable, add a `no_inject` attribute and set it to `True`.
 
 ## Installation
 
@@ -61,5 +61,8 @@ print(my_library.get_version())   # Latest release
 
 # Changelog
 
+## 1.2.3
+* Added injection safeguards. These should be applied in the target library.
+
 ## 1.2.2
-Fixed a problem where the code would be injected *before* the target line.
+* Fixed a problem where the code would be injected *before* the target line.
