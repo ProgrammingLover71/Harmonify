@@ -15,6 +15,9 @@ Like its C# equivalent, it can be used for:
 * **Replace Patching:** Completely swap out the original method's logic with your own.
 * **Create & Delete methods:** Add or remove methods from a class or a module, without changing the other ones.
 * **Easy Unpatching:** Restore methods to their original state with a simple call.
+* **Function patching:** Patch functions as easily as methods!
+* **Code Injection & Injection undo-ing:** Add you own code inside any Python function or method and revert at any time.
+  * *Note:* Be careful with code injection, as it is not safe-guarded... yet.
 
 ## Installation
 
