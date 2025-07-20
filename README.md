@@ -17,7 +17,7 @@ Like its C# equivalent, it can be used for:
 * **Easy Unpatching:** Restore methods to their original state with a simple call.
 * **Function patching:** Patch functions as easily as methods!
 * **Code Injection & Injection undo-ing:** Add you own code inside any Python function or method and revert at any time.
-  * *Note:* Be careful with code injection. If you're a library developer and want to prevent your code from being injected into, decorate your code with the `harmonify.injector_security.no_inject` decorator.
+  * *Note:* Be careful with code injection, and *do **not** inject code coming from a source you don't trust!* If you're a library developer and want to prevent your code from being injected into, decorate your code with the `harmonify.injector_security.no_inject` decorator.
 
 ## Installation
 
