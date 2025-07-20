@@ -60,6 +60,8 @@ print(my_library.get_version())   # Latest release
 ```
 
 # Changelog
+## 1.3.0
+Improve safeguards and provide an easy API. This *does* mean that the library dev needs to have Harmonify installed, which is not ideal.
 
 ## 1.2.3
 * Added injection safeguards. These should be applied in the target library.
