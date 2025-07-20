@@ -1,11 +1,17 @@
 from .flow_control import CONTINUE_EXEC, CONTINUE_WITHOUT_POSTFIX, STOP_EXEC
 from .func_types import *
 import sys, inspect, types
+from .info_utils import *
 
 
 
-_patches = {}   # To store original methods and their patches
+_method_patches = {}   # To store original methods and their patches
+_function_patches = {}
 
+n = 0
+def new_id():
+	n += 1
+	return n
 
 
 def patch_method(
@@ -31,9 +37,9 @@ def patch_method(
 
 	# Store the original method so we can restore it later
 	# We'll use a unique key for each patched method
-	patch_key = (target_class, method_name)
-	if patch_key not in _patches:
-		_patches[patch_key] = original_method
+	patch_key = (target_class, method_name, new_id())
+	if patch_key not in _method_patches:
+		_method_patches[patch_key] = original_method
 
 	def patched_method(instance, *args, **kwds):
 		flow_state = CONTINUE_EXEC   # Assume that we're continuing the execution
@@ -100,9 +106,9 @@ def patch_function(
 	if not callable(original_function):
 		return False
 
-	patch_key = (target_module, function_name)
-	if patch_key not in _patches:
-		_patches[patch_key] = original_function
+	patch_key = (target_module, function_name, new_id())
+	if patch_key not in _function_patches:
+		_function_patches[patch_key] = original_function
 
 	def patched_function(*args, **kwds):
 		flow_state = CONTINUE_EXEC
@@ -158,26 +164,26 @@ def delete_method(target_class: type, method_name: str) -> bool:
 
 
 
-def unpatch_method(target_class: type, method_name: str = "__init__") -> bool:
+def unpatch_method(target_class: type, method_name: str = "__init__", index: int = 1) -> bool:
 	"""
 	Restores a patched method to its original state.
 	"""
-	patch_key = (target_class, method_name)
-	if patch_key in _patches:
-		original_method = _patches.pop(patch_key)
+	patch_key = (target_class, method_name, index)
+	if patch_key in _method_patches:
+		original_method = _method_patches.pop(patch_key)
 		setattr(target_class, method_name, original_method)
 		return True
 	return False
 
 
 
-def unpatch_function(target_module: types.ModuleType, method_name: str) -> bool:
+def unpatch_function(target_module: types.ModuleType, method_name: str, index: int = 1) -> bool:
 	"""
 	Restores a patched method to its original state.
 	"""
-	patch_key = (target_module, method_name)
-	if patch_key in _patches:
-		original_method = _patches.pop(patch_key)
+	patch_key = (target_module, method_name, index)
+	if patch_key in _function_patches:
+		original_method = _function_patches.pop(patch_key)
 		setattr(target_module, method_name, original_method)
 		return True
 	return False
@@ -203,3 +209,29 @@ def get_current_module() -> types.ModuleType | None:
         # Clean up frame references to avoid reference cycles
         del frame
         del caller_frame
+
+
+
+def get_function_patches() -> list[PatchInfo]:
+	"""
+	Returns a list containing all applied patches for functions.<br>
+	Returns an empty list (i.e. `[]`) if no patches have been applied yet.
+	"""
+	patches = []
+	for patch_key, original in _function_patches.items():
+		(target_mod, func_name, patch_idx) = patch_key
+		patches.append(PatchInfo(target_mod, func_name, patch_idx, original))
+	return patches
+
+
+
+def get_method_patches() -> list[PatchInfo]:
+	"""
+	Returns a list containing all applied patches for methods.<br>
+	Returns an empty list (i.e. `[]`) if no patches have been applied yet.
+	"""
+	patches = []
+	for patch_key, original in _method_patches.items():
+		(target_cls, method_name, patch_idx) = patch_key
+		patches.append(PatchInfo(target_cls, method_name, patch_idx, original))
+	return patches
