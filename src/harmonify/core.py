@@ -10,6 +10,7 @@ _function_patches = {}
 
 n = 0
 def new_id():
+	global n
 	n += 1
 	return n
 

@@ -5,4 +5,4 @@ from .patch import *
 from .injector import *
 from .injector_security import *
 
-version = "1.3.1"
+version = "1.3.2"

@@ -115,6 +115,9 @@ restricted_api("secret service agent #42", "super secret password")
 
 # Changelog
 
+## 1.3.2
+Fixed an internal bug where an `AttributeError` would appear.
+
 ## 1.3.1
 Added the `PatchInfo` utility class and two new fucntions, `get_function_patches` and `get_method_patches`.
 These two functions return informations about every patch that has been applied up until the call.
