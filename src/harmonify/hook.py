@@ -135,6 +135,25 @@ def call_method_hook(hook_index: int = 0):
 
 
 
+def call_hook(hook_index: int = 0):
+    """
+    Calls the hook at the specified index.
+    This function is a wrapper to call either a function or method hook based on the context.
+    Args:
+        `hook_index`: The index of the hook to call.
+    """
+    # Determine if we are in a function or method context
+    frame = inspect.currentframe().f_back
+    if frame is None:
+        raise RuntimeError("No calling frame found.")
+    
+    if "self" in frame.f_locals:
+        call_method_hook(hook_index)
+    else:
+        call_function_hook(hook_index)
+
+
+
 def get_active_function_hooks() -> dict:
     """
     Returns a dictionary of currently active function hooks.

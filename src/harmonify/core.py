@@ -165,6 +165,20 @@ def delete_method(target_class: type, method_name: str) -> bool:
 
 
 
+def delete_function(target_module: types.ModuleType, function_name: str) -> bool:
+	"""
+	Deletes a function from a module.
+
+	Args:
+		`target_module`: The module that the function is being deleted from.
+		`function_name`: The name of the function that is being deleted.
+	"""
+	# deleting is as simple as a delattr() call
+	delattr(target_module, function_name)
+	return True
+
+
+
 def unpatch_method(target_class: type, method_name: str = "__init__", index: int = 1) -> bool:
 	"""
 	Restores a patched method to its original state.

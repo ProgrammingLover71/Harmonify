@@ -6,4 +6,4 @@ from .injector import *
 from .injector_security import *
 from .hook import *
 
-version = "1.4.0"
+version = "1.4.1"

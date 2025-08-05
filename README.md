@@ -115,6 +115,10 @@ restricted_api("secret service agent #42", "super secret password")
 
 # Changelog
 
+## 1.4.1
+Added the generic `call_hook` function, along with context managers for temporary patches/injections/hooks.
+Also added the `remove_function` function, which was missing from a previous release.
+
 ## 1.4.0
 Added hooks. These can be registered to a callable via the `register_function_hook` and `register_method_hook` functions.
 Hooks can be called by a library function with `call_function_hook` or `call_method_hook`. Multiple hooks can be added to the same callable. <br>
