@@ -115,6 +115,11 @@ restricted_api("secret service agent #42", "super secret password")
 
 # Changelog
 
+## 1.4.0
+Added hooks. These can be registered to a callable via the `register_function_hook` and `register_method_hook` functions.
+Hooks can be called by a library function with `call_function_hook` or `call_method_hook`. Multiple hooks can be added to the same callable. <br>
+*Future plan (possibly in 1.4.1): add a generic `call_hook` function, which would dispatch to `call_function_hook` or `call_method_hook`, depending on the caller.*
+
 ## 1.3.2
 Fixed an internal bug where an `UnboundLocalError` would appear when creating a new patch.
 
@@ -126,7 +131,7 @@ These two functions return informations about every patch that has been applied 
 Slightly improved safeguards to provide an easy API. This *does* mean that the library dev needs to have Harmonify installed, which is not ideal.
 
 ## 1.2.3
-* Added injection safeguards. These should be applied in the target library.
+Added injection safeguards. These should be applied in the target library.
 
 ## 1.2.2
-* Fixed a problem where the code would be injected *before* the target line.
+Fixed a problem where the code would be injected *before* the target line.
