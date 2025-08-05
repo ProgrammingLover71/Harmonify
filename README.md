@@ -115,6 +115,9 @@ restricted_api("secret service agent #42", "super secret password")
 
 # Changelog
 
+## 1.4.2
+Added functions for easy use of the context managers from **1.4.1**, named `apply_patch`, `apply_inject` and `add_hook`.
+
 ## 1.4.1
 Added the generic `call_hook` function, along with context managers for temporary patches/injections/hooks.
 Also added the `remove_function` function, which was missing from a previous release.

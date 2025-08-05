@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: harmonify-patcher
-Version: 1.4.1
+Version: 1.4.2
 Summary: Method behavior modification at runtime, made easy.
 Author-email: Wind Rider <abcbcalol69@gmail.com>
 License: MIT License
@@ -151,6 +151,9 @@ restricted_api("secret service agent #42", "super secret password")
 
 
 # Changelog
+
+## 1.4.2
+Added functions for easy use of the context managers from **1.4.1**, named `apply_patch`, `apply_inject` and `add_hook`.
 
 ## 1.4.1
 Added the generic `call_hook` function, along with context managers for temporary patches/injections/hooks.
