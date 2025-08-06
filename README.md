@@ -121,7 +121,10 @@ api_lib.restricted_api(uname="Super Secret Agent #42", passwd="SuperSecretPasswo
 
 # Changelog
 
-# 2.0.0 (Release Candidate 1)
+## 2.0.0 (Release Candidate 2)
+Fixed import syntax. It seems like Python hates me.
+
+## 2.0.0 (Release Candidate 1)
 Remade the injector module, separating it as a package and remaking the API for injecting cleaner.
 Added the `TreePath` class, meant for retrieving statements based on an exact path.
 These changes make the injector more robust and simpler to use.
