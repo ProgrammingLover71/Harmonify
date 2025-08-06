@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: harmonify-patcher
-Version: 1.4.2
+Version: 2.0.0rc1
 Summary: Method behavior modification at runtime, made easy.
 Author-email: Wind Rider <abcbcalol69@gmail.com>
 License: MIT License
@@ -120,37 +120,49 @@ def restricted_api(uname, passwd):
 #### main.py
 ```python
 import harmonify
-if harmonify.inject_function(
-    harmonify.get_current_module(),
-    "open_api1", 1,
-    "print('Done!')"
-):
-    print("Successfully injected open_api1")
-
-    
-if harmonify.inject_function(
-    harmonify.get_current_module(),
-    "open_api2", 1,
-    "print('Done!')"
-):
-    print("Successfully injected open_api2")
-
+import api_lib
 
 if harmonify.inject_function(
-    harmonify.get_current_module(),
-    "restricted_api", 1,
-    "print('Done!')"
+    target_module = api_lib,
+    function_name = "open_api1",
+    path = harmonify.TreePath(0),
+    inject_type = harmonify.InjectType.AFTER_TARGET,
+    code_to_inject = "print('Injected!')"
 ):
-    print("Successfully injected restricted_api")
+    print("Successfully injected open_api1()")
 
-open_api1()
-open_api2()
-restricted_api("secret service agent #42", "super secret password")
+if harmonify.inject_function(
+    target_module = api_lib,
+    function_name = "open_api2",
+    path = harmonify.TreePath(0),
+    inject_type = harmonify.InjectType.AFTER_TARGET,
+    code_to_inject = "print('Injected!')"
+):
+    print("Successfully injected open_api2()")
+
+if harmonify.inject_function(
+    target_module = api_lib,
+    function_name = "restricted_api",
+    path = harmonify.TreePath(0),
+    inject_type = harmonify.InjectType.AFTER_TARGET,
+    code_to_inject = "print('Stealing info!')"
+):
+    print("Successfully injected restricted_api()")
+
+api_lib.open_api1()
+api_lib.open_api2()
+api_lib.restricted_api(uname="Super Secret Agent #42", passwd="SuperSecretPassword123")
 ```
 
 
 
 # Changelog
+
+# 2.0.0 (Release Candidate 1)
+Remade the injector module, separating it as a package and remaking the API for injecting cleaner.
+Added the `TreePath` class, meant for retrieving statements based on an exact path.
+These changes make the injector more robust and simpler to use.
+Updated the injector example from above.
 
 ## 1.4.2
 Added functions for easy use of the context managers from **1.4.1**, named `apply_patch`, `apply_inject` and `add_hook`.

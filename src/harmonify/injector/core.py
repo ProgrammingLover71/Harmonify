@@ -2,7 +2,9 @@ import ast
 import inspect
 import textwrap
 import types
-from . import injector_security as sec
+
+from harmonify.injector.utils import *
+from . import security as sec
 
 _func_injections = {}
 _method_injections = {}
@@ -11,7 +13,8 @@ _method_injections = {}
 def inject_function(
     target_module: types.ModuleType,
     function_name: str,
-    insert_after_line: int = 0,
+    path: TreePath,
+    inject_type: InjectType,
     code_to_inject: str | None = None
 ):
     """
@@ -34,28 +37,9 @@ def inject_function(
     
     function_source = textwrap.dedent(inspect.getsource(target_function))
     function_ast = ast.parse(function_source)
-
-    class CodeInjector(ast.NodeTransformer):
-        def visit_FunctionDef(self, node):
-            new_node = self.generic_visit(node)
-
-            if code_to_inject:
-                target_line = insert_after_line + 1
-                insert_index = 0
-
-                # Find starting place based on the line number
-                for index, statement in enumerate(node.body):
-                    if hasattr(statement, "lineno") and statement.lineno <= target_line:
-                        insert_index = index + 1
-                
-                # Inject the code snippet
-                injected_code = ast.parse(code_to_inject).body
-                new_node.body[insert_index:insert_index] = injected_code
-            
-            return new_node
     
     # Transform the function's AST
-    injector = CodeInjector()
+    injector = CodeInjectorTreePath(path, inject_type, code_to_inject)
     new_ast = injector.visit(function_ast)
     ast.fix_missing_locations(new_ast)   # Fix the AST's line numbers and positions
 
@@ -99,8 +83,9 @@ def undo_func_inject(
 
 def inject_method(
     target_class: type,
-    method_name: str = "__init__",
-    insert_after_line: int = 0,
+    method_name: str,
+    path: TreePath,
+    inject_type: InjectType,
     code_to_inject: str | None = None
 ):
     """
@@ -128,28 +113,9 @@ def inject_method(
 
     method_source = textwrap.dedent(inspect.getsource(target_method))
     method_ast = ast.parse(method_source)
-
-    class CodeInjector(ast.NodeTransformer):
-        def visit_FunctionDef(self, node):
-            new_node = self.generic_visit(node)
-
-            if code_to_inject:
-                target_line = insert_after_line + 1
-                insert_index = 0
-
-                # Find starting place based on the line number
-                for index, statement in enumerate(node.body):
-                    if hasattr(statement, "lineno") and statement.lineno <= target_line:
-                        insert_index = index + 1
-                
-                # Inject the code snippet
-                injected_code = ast.parse(code_to_inject).body
-                new_node.body[insert_index:insert_index] = injected_code
-            
-            return new_node
     
     # Transform the method's AST
-    injector = CodeInjector()
+    injector = CodeInjectorTreePath(path, inject_type, code_to_inject)
     new_ast = injector.visit(method_ast)
     ast.fix_missing_locations(new_ast)   # Fix the AST's line numbers and positions
 

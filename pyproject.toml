@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "harmonify-patcher"
-version = "1.4.2"
+version = "2.0.0rc1"
 description = "Method behavior modification at runtime, made easy."
 readme = "README.md"
 authors = [{ name = "Wind Rider", email = "abcbcalol69@gmail.com" }]

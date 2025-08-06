@@ -8,9 +8,13 @@ src/harmonify/flow_control.py
 src/harmonify/func_types.py
 src/harmonify/hook.py
 src/harmonify/info_utils.py
-src/harmonify/injector.py
-src/harmonify/injector_security.py
+src/harmonify/old_injector.py
 src/harmonify/patch.py
+src/harmonify/injector/__init__.py
+src/harmonify/injector/core.py
+src/harmonify/injector/security.py
+src/harmonify/injector/tree_path.py
+src/harmonify/injector/utils.py
 src/harmonify_patcher.egg-info/PKG-INFO
 src/harmonify_patcher.egg-info/SOURCES.txt
 src/harmonify_patcher.egg-info/dependency_links.txt

@@ -1,13 +1,15 @@
-from .core import *
-from .flow_control import *
-from .func_types import *
-from .patch import *
-from .injector import *
-from .injector_security import *
-from .hook import *
-from .context import *
+from harmonify.core import *
+from harmonify.flow_control import *
+from harmonify.func_types import *
+from harmonify.patch import *
+from harmonify.injector import *
+from harmonify.injector.security import *
+from harmonify.hook import *
+from harmonify.context import *
 
-__version__ = "1.4.2"
+import harmonify.old_injector as old_injector   # For backward compatibility
+
+__version__ = "2.0.0rc1"
 
 
 
