@@ -9,7 +9,7 @@ from .context import *
 
 from . import old_injector   # For backward compatibility
 
-__version__ = "2.0.0rc2"
+__version__ = "2.0.0"
 
 
 

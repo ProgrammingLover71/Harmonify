@@ -121,6 +121,9 @@ api_lib.restricted_api(uname="Super Secret Agent #42", passwd="SuperSecretPasswo
 
 # Changelog
 
+# 2.0.0
+Final fix made regarding import syntax.
+
 ## 2.0.0 (Release Candidate 2)
 Fixed import syntax. It seems like Python hates me.
 

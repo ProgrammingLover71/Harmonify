@@ -1,5 +1,5 @@
 import ast
-from harmonify.injector.tree_path import *
+from .tree_path import *
 
 
 class CodeInjectorLineNumber(ast.NodeTransformer):
