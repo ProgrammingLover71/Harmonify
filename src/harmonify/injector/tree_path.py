@@ -1,9 +1,19 @@
 import ast
+from platform import node
 
 
 class TreePath:
-    def __init__(self, *branches):
-        self.branches = branches
+    """
+    A class to represent a path through the AST.
+    The path is defined by a starting index and a series of steps.
+    Each step is an index into the body of the current node. <br>
+
+    This class allows for flexible navigation through the AST,
+    and is primarily used for locating specific nodes when injecting code.
+    """
+    def __init__(self, start, *steps):
+        self.start = start
+        self.steps = steps
     
     def _get_body_field(self, node: ast.stmt):
         """
@@ -21,10 +31,17 @@ class TreePath:
         """
         Walk through the AST node and return the target node based on the path.
         """
-        current = root
-        for branch in self.branches:
-            body_field = self._get_body_field(current)
-            if not (0 <= branch < len(body_field)):
-                raise IndexError(f"Branch {branch} is out of range for node {ast.dump(current)}.")
-            current = body_field[branch]
+        current = self.walk_step(root, self.start)
+        for step in self.steps:
+            current = self.walk_step(current, step)
         return current
+    
+    def walk_step(self, node: ast.stmt, step: int) -> ast.stmt:
+        """
+        Walk one step in the AST node based on the step index.
+        Raises IndexError if the step is out of range.
+        """
+        body_field = self._get_body_field(node)
+        if not (0 <= step < len(body_field)):
+            raise IndexError(f"step {step} is out of range for node {ast.dump(node)}.")
+        return body_field[step]

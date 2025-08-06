@@ -121,6 +121,10 @@ api_lib.restricted_api(uname="Super Secret Agent #42", passwd="SuperSecretPasswo
 
 # Changelog
 
+# 2.0.1
+Fixed many bugs with the new injector, allowing it to be somewhat usable.
+*Future plan (most probably in 2.0.2): add the ability to walk the alternate branches (`else` statements) for `if` and `for` constructs.*
+
 # 2.0.0
 Final fix made regarding import syntax.
 

@@ -3,7 +3,7 @@ import inspect
 import textwrap
 import types
 
-from harmonify.injector.utils import *
+from .utils import *
 from . import security as sec
 
 _func_injections = {}
