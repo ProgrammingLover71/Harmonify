@@ -4,7 +4,7 @@ import textwrap
 import types
 
 from .injector.utils import *
-from . import injector_security as sec
+from .injector.security as sec
 
 _func_injections = {}
 _method_injections = {}
