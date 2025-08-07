@@ -6,13 +6,14 @@ class CodeInjectorLineNumber(ast.NodeTransformer):
     """
     A class to inject code into a function at a specific line number.
     """
-    def __init__(self, code_to_inject: str, insert_after_line: int):
+    def __init__(self, code_to_inject: str, insert_after_line: int, _tn: ast.stmt = None):
         super().__init__()
         self.code_to_inject = code_to_inject
         self.insert_after_line = insert_after_line
+        self._tn = _tn
 
     def visit_FunctionDef(self, node):
-        new_node = self.generic_visit(node)
+        new_node = self.generic_visit(self._tn) or self.generic_visit(node)
 
         if self.code_to_inject:
             target_line = self.insert_after_line + 1
@@ -57,6 +58,7 @@ class CodeInjectorTreePath(ast.NodeTransformer):
 
         if self.path:
             target_stmt = self.path.walk(new_node)
+            target_parent = self.path._parent
             ln = target_stmt.lineno
             # Modify the line number based on the injection type
             if self.typ != InjectType.REPLACE_TARGET:
@@ -70,8 +72,8 @@ class CodeInjectorTreePath(ast.NodeTransformer):
                 if self.code_to_inject:
                     injected_code = ast.parse(self.code_to_inject).body
                     # Get the index of the target statement
-                    insert_index = new_node.body.index(target_stmt)
-                    new_node.body.remove(target_stmt)
-                    new_node.body[insert_index:insert_index] = injected_code
+                    insert_index = target_parent.body.index(target_stmt)
+                    target_parent.body.remove(target_stmt)
+                    target_parent.body[insert_index:insert_index] = injected_code
             
         return new_node
