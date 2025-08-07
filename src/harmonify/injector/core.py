@@ -4,7 +4,7 @@ import textwrap
 import types
 
 from .utils import *
-from . import security as sec
+from .injector import security as sec
 
 _func_injections = {}
 _method_injections = {}
@@ -13,20 +13,21 @@ _method_injections = {}
 def inject_function(
     target_module: types.ModuleType,
     function_name: str,
-    path: TreePath,
-    inject_type: InjectType,
+    insert_line: int,
+    insert_type: int,
     code_to_inject: str | None = None
 ):
     """
     Inject the specified code snippet in the targeted function's source (at runtime).<br>
-    If the function has a "no_inject" attribute set to True, then this will not do anything.<br>
+    If the function is decorated with `harmonify.no_inject`, then this will not do anything.<br>
     **Note**: This is very dangerous and allows programmmers to run *unsandboxed code*!
     
     Args:
         `target_module`: The module in which the targeted function exists.
         `function_name`: The name of the targeted function.
-        `insert_after_line`: The line number (relative to the function definition) after which the code will be injected.
-        `code_to_inject`: The code snippet that will be injected.
+        `insert_line`: The line number (relative to the function definition) where which the code will be injected.
+        `insert_type`: The type of injection (before, after, or replace).
+        `code_to_inject`: The code snippet that will be injected (Replace injection works only if the code to inject is a single statement).
     """
     target_function = getattr(target_module, function_name)
     if isinstance(target_function, sec.no_inject):
@@ -39,7 +40,7 @@ def inject_function(
     function_ast = ast.parse(function_source)
     
     # Transform the function's AST
-    injector = CodeInjectorTreePath(path, inject_type, code_to_inject)
+    injector = CodeInjector(insert_line=insert_line, insert_type=insert_type, code_to_inject=code_to_inject)
     new_ast = injector.visit(function_ast)
     ast.fix_missing_locations(new_ast)   # Fix the AST's line numbers and positions
 
@@ -84,20 +85,20 @@ def undo_func_inject(
 def inject_method(
     target_class: type,
     method_name: str,
-    path: TreePath,
-    inject_type: InjectType,
+    insert_line: int,
+    insert_type: int,
     code_to_inject: str | None = None
 ):
     """
     Inject the specified code snippet in the targeted method's source (at runtime).<br>
-    If the function has a "no_inject" attribute set to True, then this will not do anything.<br>
+    If the function is decorated with `harmonify.no_inject`, then this will not do anything.<br>
     **Note**: This is very dangerous and allows programmmers to run *unsandboxed code*!
     
     Args:
         `target_module`: The module in which the targeted method exists.
         `method_name`: The name of the targeted method.
         `insert_after_line`: The line number (relative to the method definition) after which the code will be injected.
-        `code_to_inject`: The code snippet that will be injected.
+        `code_to_inject`: The code snippet that will be injected (Replace injection works only if the code to inject is a single statement).
     """
     target_method = getattr(target_class, method_name)
     if isinstance(target_method, sec.no_inject):
@@ -115,7 +116,7 @@ def inject_method(
     method_ast = ast.parse(method_source)
     
     # Transform the method's AST
-    injector = CodeInjectorTreePath(path, inject_type, code_to_inject)
+    injector = CodeInjector(insert_line=insert_line, insert_type=insert_type, code_to_inject=code_to_inject)
     new_ast = injector.visit(method_ast)
     ast.fix_missing_locations(new_ast)   # Fix the AST's line numbers and positions
 

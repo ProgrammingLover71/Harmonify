@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: harmonify-patcher
-Version: 2.0.2
+Version: 3.0.0
 Summary: Method behavior modification at runtime, made easy.
 Author-email: Wind Rider <abcbcalol69@gmail.com>
 License: MIT License
@@ -55,7 +55,7 @@ Like its C# equivalent, it can be used for:
 * **Function Patching:** Patch functions as easily as methods!
 * **Function and Method Hooking:** Use a *very* simple API to hook into any method (that is hookable)!
 * **Code Injection & Injection undo-ing:** Add you own code inside any Python function or method and revert at any time.
-  * *Note:* Be careful with code injection, and *do **not** inject code coming from a source you don't trust!* If you're a library developer and want to prevent your code from being injected into, decorate your code with the `harmonify.injector.security.no_inject` decorator.
+  * *Note:* Be careful with code injection, and *do **not** inject code coming from a source you don't trust!* If you're a library developer and want to prevent your code from being injected into, decorate your code with the `harmonify.no_inject` decorator. If you *want* your code to be injected into, you can also use the `harmonify.allow_inject` decorator fol clarity.
 
 ## Installation
 
@@ -126,8 +126,8 @@ import api_lib
 if harmonify.inject_function(
     target_module = api_lib,
     function_name = "open_api1",
-    path = harmonify.TreePath(0),
-    inject_type = harmonify.InjectType.AFTER_TARGET,
+    insert_line = 1,
+    insert_type = harmonify.InsertType.AFTER_TARGET,
     code_to_inject = "print('Injected!')"
 ):
     print("Successfully injected open_api1()")
@@ -135,8 +135,8 @@ if harmonify.inject_function(
 if harmonify.inject_function(
     target_module = api_lib,
     function_name = "open_api2",
-    path = harmonify.TreePath(0),
-    inject_type = harmonify.InjectType.AFTER_TARGET,
+    insert_line = 1,
+    insert_type = harmonify.InsertType.AFTER_TARGET,
     code_to_inject = "print('Injected!')"
 ):
     print("Successfully injected open_api2()")
@@ -144,8 +144,8 @@ if harmonify.inject_function(
 if harmonify.inject_function(
     target_module = api_lib,
     function_name = "restricted_api",
-    path = harmonify.TreePath(0),
-    inject_type = harmonify.InjectType.AFTER_TARGET,
+    insert_line = 1,
+    insert_type = harmonify.InsertType.AFTER_TARGET,
     code_to_inject = "print('Stealing info!')"
 ):
     print("Successfully injected restricted_api()")
@@ -156,16 +156,48 @@ api_lib.restricted_api(uname="Super Secret Agent #42", passwd="SuperSecretPasswo
 ```
 
 
+### Method Hooking
+#### game.py
+```python
+import harmonify   # Required for the hook API
+
+class Game:
+    def __init__(self, player):
+        self.player = player
+        self.setup()
+        harmonify.call_hook('setup', [self])   # Call the setup hook in case anyone needs to do something with the game
+    
+    # ...
+```
+
+#### main.py
+```python
+import hamronify
+import game
+
+def my_setup_hook(game_self: game.Game):
+    game_self.player.health += 10   # Give the player a health boost
+
+harmonify.register_method_hook(
+    target_class = game.Game,
+    method_name = "__init__",
+    hook_callback = my_setup_hook,
+    hook_id = "setup"
+)
+
+g = Game()
+assert g.player.health == 110   # Assume the player starts with 100HP
+```
+
+
 
 # Changelog
 
-# 2.0.2
-Allow hooks to be called with parameters from the target library.
-Alternate branch support for the injector will be added in the **2.1.0** update.
-
-# 2.0.1
-Fixed many bugs with the new injector, allowing it to be somewhat usable.
-*Future plan (most probably in 2.0.2): add the ability to walk the alternate branches (`else` statements) for `if` and `for` constructs.*
+# 3.0.0
+Reverted to the old injector, while also cleaning it up.
+This is because the new injector was too messy and had too many bugs. <br>
+Changed some names in the injector module to make more sense. <br>
+Allow hooks to use *ID*s instead of numbers when calling hooks.
 
 # 2.0.0
 Final fix made regarding import syntax.

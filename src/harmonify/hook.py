@@ -1,11 +1,11 @@
 import types, typing, inspect, sys
 
 
-_active_function_hooks = {}
-_active_method_hooks = {}
+_active_function_hooks: dict[tuple, dict[str, typing.Callable]] = {}
+_active_method_hooks: dict[tuple, dict[str, typing.Callable]] = {}
 
 
-def register_function_hook(target_module: types.ModuleType, function_name: str, hook_callback: typing.Callable):
+def register_function_hook(target_module: types.ModuleType, function_name: str, hook_callback: typing.Callable, hook_id: str):
     """
     Registers a hook callback for a function in a module.
 
@@ -17,12 +17,12 @@ def register_function_hook(target_module: types.ModuleType, function_name: str, 
     hook_key = (target_module, function_name)
     if hook_key not in _active_function_hooks:
         _active_function_hooks[hook_key] = []
-    _active_function_hooks[hook_key].append(hook_callback)
+    _active_function_hooks[hook_key][hook_id] = hook_callback
     return True
 
 
 
-def register_method_hook(target_class: type, method_name: str, hook_callback: typing.Callable):
+def register_method_hook(target_class: type, method_name: str, hook_callback: typing.Callable, hook_id: str):
     """
     Registers a hook callback for a method in a class.
 
@@ -34,12 +34,12 @@ def register_method_hook(target_class: type, method_name: str, hook_callback: ty
     hook_key = (target_class, method_name)
     if hook_key not in _active_method_hooks:
         _active_method_hooks[hook_key] = []
-    _active_method_hooks[hook_key].append(hook_callback)
+    _active_method_hooks[hook_key][hook_id] = hook_callback
     return True
 
 
 
-def remove_function_hook(target_module: types.ModuleType, function_name: str, hook_callback: typing.Callable):
+def remove_function_hook(target_module: types.ModuleType, function_name: str, hook_callback: typing.Callable, hook_id: str):
     """
     Removes a hook callback for a function in a module.
 
@@ -50,14 +50,14 @@ def remove_function_hook(target_module: types.ModuleType, function_name: str, ho
     """
     hook_key = (target_module, function_name)
     if hook_key in _active_function_hooks:
-        _active_function_hooks[hook_key].remove(hook_callback)
+        del _active_function_hooks[hook_key][hook_id]
         if not _active_function_hooks[hook_key]:
             del _active_function_hooks[hook_key]
     return True
 
 
 
-def remove_method_hook(target_class: type, method_name: str, hook_callback: typing.Callable):
+def remove_method_hook(target_class: type, method_name: str, hook_callback: typing.Callable, hook_id: str):
     """
     Removes a hook callback for a method in a class.
 
@@ -68,7 +68,7 @@ def remove_method_hook(target_class: type, method_name: str, hook_callback: typi
     """
     hook_key = (target_class, method_name)
     if hook_key in _active_method_hooks:
-        _active_method_hooks[hook_key].remove(hook_callback)
+        del _active_method_hooks[hook_key][hook_id]
         if not _active_method_hooks[hook_key]:
             del _active_method_hooks[hook_key]
     return True
@@ -77,7 +77,7 @@ def remove_method_hook(target_class: type, method_name: str, hook_callback: typi
 
 ### THESE FUNCTIONS ARE TO BE USED IN THE LIBRARY FUNCTIONS THEMSELVES ###
 
-def call_function_hook(hook_index: int = 0, args: list = [], kwds: dict = {}):
+def call_function_hook(hook_id: str, args: list = [], kwds: dict = {}):
     """
     WARNING: This function is to be used as an API in the target library.
     Calls the function hook at the specified index.
@@ -102,11 +102,11 @@ def call_function_hook(hook_index: int = 0, args: list = [], kwds: dict = {}):
     # Call the registered hook with the specified index
     if hook_key in _active_function_hooks:
         hooks = _active_function_hooks[hook_key]
-        if 0 <= hook_index < len(hooks):
-            hooks[hook_index](*args, **kwds)
+        if hook_id in hooks:
+            hooks[hook_id](*args, **kwds)
 
 
-def call_method_hook(hook_index: int = 0, args: list = [], kwds: dict = {}):
+def call_method_hook(hook_id: str, args: list = [], kwds: dict = {}):
     """
     WARNING: This function is to be used as an API in the target library.
     Calls the method hook at the specified index.
@@ -130,12 +130,12 @@ def call_method_hook(hook_index: int = 0, args: list = [], kwds: dict = {}):
     # Call the registered hook with the specified index
     if hook_key in _active_method_hooks:
         hooks = _active_method_hooks[hook_key]
-        if 0 <= hook_index < len(hooks):
-            hooks[hook_index](*args, **kwds)
+        if hook_id in hooks:
+            hooks[hook_id](*args, **kwds)
 
 
 
-def call_hook(hook_index: int = 0):
+def call_hook(hook_id: str, args: list = [], kwds: dict = {}):
     """
     Calls the hook at the specified index.
     This function is a wrapper to call either a function or method hook based on the context.
@@ -148,13 +148,13 @@ def call_hook(hook_index: int = 0):
         raise RuntimeError("No calling frame found.")
     
     if "self" in frame.f_locals:
-        call_method_hook(hook_index)
+        call_method_hook(hook_id, args, kwds)
     else:
-        call_function_hook(hook_index)
+        call_function_hook(hook_id, args, kwds)
 
 
 
-def get_active_function_hooks() -> dict:
+def get_active_function_hooks() -> dict[tuple, dict[str, typing.Callable]]:
     """
     Returns a dictionary of currently active function hooks.
     """
@@ -162,7 +162,7 @@ def get_active_function_hooks() -> dict:
 
 
 
-def get_active_method_hooks() -> dict:
+def get_active_method_hooks() -> dict[tuple, dict[str, typing.Callable]]:
     """
     Returnst a dictionary of currently active method hooks.
     """

@@ -6,10 +6,10 @@ from .injector import *
 from .injector.security import *
 from .hook import *
 from .context import *
+from .injector import *
 
-from . import old_injector   # For backward compatibility
 
-__version__ = "2.0.2"
+__version__ = "3.0.0"
 
 
 
