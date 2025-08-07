@@ -14,10 +14,7 @@ class TreePath:
     def __init__(self, start, *steps):
         self.start = start
         self.steps = steps
-<<<<<<< HEAD
-=======
         self._parent = None
->>>>>>> b770209b6a0743780d42bfb454bed804162163a3
 
     def walk(self, root: ast.stmt) -> ast.stmt:
         """
