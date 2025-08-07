@@ -15,9 +15,10 @@ Like its C# equivalent, it can be used for:
 * **Replace Patching:** Completely swap out the original method's logic with your own.
 * **Create & Delete methods:** Add or remove methods from a class or a module, without changing the other ones.
 * **Easy Unpatching:** Restore methods to their original state with a simple call.
-* **Function patching:** Patch functions as easily as methods!
+* **Function Patching:** Patch functions as easily as methods!
+* **Function and Method Hooking:** Use a *very* simple API to hook into any method (that is hookable)!
 * **Code Injection & Injection undo-ing:** Add you own code inside any Python function or method and revert at any time.
-  * *Note:* Be careful with code injection, and *do **not** inject code coming from a source you don't trust!* If you're a library developer and want to prevent your code from being injected into, decorate your code with the `harmonify.injector_security.no_inject` decorator.
+  * *Note:* Be careful with code injection, and *do **not** inject code coming from a source you don't trust!* If you're a library developer and want to prevent your code from being injected into, decorate your code with the `harmonify.injector.security.no_inject` decorator.
 
 ## Installation
 
@@ -120,6 +121,10 @@ api_lib.restricted_api(uname="Super Secret Agent #42", passwd="SuperSecretPasswo
 
 
 # Changelog
+
+# 2.0.2
+Allow hooks to be called with parameters from the target library.
+Alternate branch support for the injector will be added in the **2.1.0** update.
 
 # 2.0.1
 Fixed many bugs with the new injector, allowing it to be somewhat usable.

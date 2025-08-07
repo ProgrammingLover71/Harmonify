@@ -61,17 +61,21 @@ class CodeInjectorTreePath(ast.NodeTransformer):
             # Modify the line number based on the injection type
             if self.typ != InjectType.REPLACE_TARGET:
                 if self.typ == InjectType.BEFORE_TARGET: ln -= 1
-                elif self.typ == InjectType.AFTER_TARGET: ln += 1
+                elif self.typ == InjectType.AFTER_TARGET: pass
                 # Use the line number injector to inject the code
-                injector = CodeInjectorLineNumber(self.code_to_inject, ln - 1)
+                injector = CodeInjectorLineNumber(self.code_to_inject, ln)
                 new_node = injector.visit(new_node)
             else:
                 # Replace the target statement with the injected code
                 if self.code_to_inject:
                     injected_code = ast.parse(self.code_to_inject).body
-                    # Get the index of the target statement
-                    insert_index = new_node.body.index(target_stmt)
-                    new_node.body.remove(target_stmt)
+                    # Get the index of the target statement -- default to the first one
+                    try:
+                        insert_index = new_node.body.index(target_stmt)
+                        new_node.body.remove(target_stmt)
+                    except ValueError:
+                        insert_index = 0
+                    # Inject the code snippet at the target index
                     new_node.body[insert_index:insert_index] = injected_code
             
         return new_node

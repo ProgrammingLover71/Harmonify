@@ -77,7 +77,7 @@ def remove_method_hook(target_class: type, method_name: str, hook_callback: typi
 
 ### THESE FUNCTIONS ARE TO BE USED IN THE LIBRARY FUNCTIONS THEMSELVES ###
 
-def call_function_hook(hook_index: int = 0):
+def call_function_hook(hook_index: int = 0, args: list = [], kwds: dict = {}):
     """
     WARNING: This function is to be used as an API in the target library.
     Calls the function hook at the specified index.
@@ -103,10 +103,10 @@ def call_function_hook(hook_index: int = 0):
     if hook_key in _active_function_hooks:
         hooks = _active_function_hooks[hook_key]
         if 0 <= hook_index < len(hooks):
-            hooks[hook_index]()
+            hooks[hook_index](*args, **kwds)
 
 
-def call_method_hook(hook_index: int = 0):
+def call_method_hook(hook_index: int = 0, args: list = [], kwds: dict = {}):
     """
     WARNING: This function is to be used as an API in the target library.
     Calls the method hook at the specified index.
@@ -131,7 +131,7 @@ def call_method_hook(hook_index: int = 0):
     if hook_key in _active_method_hooks:
         hooks = _active_method_hooks[hook_key]
         if 0 <= hook_index < len(hooks):
-            hooks[hook_index]()
+            hooks[hook_index](*args, **kwds)
 
 
 
