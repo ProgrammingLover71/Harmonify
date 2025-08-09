@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: harmonify-patcher
-Version: 3.0.0
+Version: 3.1.0
 Summary: Method behavior modification at runtime, made easy.
 Author-email: Wind Rider <abcbcalol69@gmail.com>
 License: MIT License
@@ -186,12 +186,16 @@ harmonify.register_method_hook(
 )
 
 g = Game()
-assert g.player.health == 110   # Assume the player starts with 100HP
+assert g.player.health == 110   # Assume the player starts with 10 0HP
 ```
 
 
 
 # Changelog
+
+# 3.1.0
+Rewrote the patch class system to look more like Harmony's. <br>
+Added a general handler class, named `Harmonify`.
 
 # 3.0.0
 Reverted to the old injector, while also cleaning it up.

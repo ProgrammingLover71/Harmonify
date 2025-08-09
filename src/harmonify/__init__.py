@@ -7,9 +7,10 @@ from .injector.security import *
 from .hook import *
 from .context import *
 from .injector import *
+from .handler import *
 
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 
 
 

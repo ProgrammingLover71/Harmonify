@@ -16,16 +16,16 @@ class CodeInjector(ast.NodeTransformer):
     A class to inject code into a function at a specific line number.
     Replace injection works only if the code to inject is a single statement.
     """
-    def __init__(self, code_to_inject: str, insert_line: int, insert_type: int):
+    def __init__(self, target_code: str, insert_line: int, insert_type: int):
         super().__init__()
-        self.code_to_inject = code_to_inject
+        self.target_code = target_code
         self.insert_line = insert_line
         self.insert_type = insert_type
 
     def visit_FunctionDef(self, node):
         new_node = self.generic_visit(node)
 
-        if self.code_to_inject:
+        if self.target_code:
             target_line = self.insert_line + 1
             insert_index = 0
 
@@ -35,7 +35,7 @@ class CodeInjector(ast.NodeTransformer):
                     insert_index = index + 1
             
             # Inject the code snippet
-            injected_code = ast.parse(self.code_to_inject).body
+            injected_code = ast.parse(self.target_code).body
             if self.insert_type != InsertType.REPLACE_TARGET:
                 insert_index += self.insert_type
                 new_node.body[insert_index:insert_index] = injected_code

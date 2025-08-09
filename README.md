@@ -156,6 +156,10 @@ assert g.player.health == 110   # Assume the player starts with 100HP
 
 # Changelog
 
+# 3.1.0
+Rewrote the patch class system to look more like Harmony's. <br>
+Added a general handler class, named `Harmonify`.
+
 # 3.0.0
 Reverted to the old injector, while also cleaning it up.
 This is because the new injector was too messy and had too many bugs. <br>
