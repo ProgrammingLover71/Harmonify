@@ -1,11 +1,10 @@
 from .func_types import *
-from abc import ABCMeta
 from .core import patch_method, create_method, delete_method
 from .injector import *
 import types
 
 
-class Patch(metaclass=ABCMeta):
+class Patch():
 	"""A base class for creating patches to modify methods in classes."""
 
 	# Decorators for indicating the patch target location

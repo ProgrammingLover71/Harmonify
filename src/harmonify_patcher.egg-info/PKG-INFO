@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: harmonify-patcher
-Version: 3.1.0
+Version: 3.1.1
 Summary: Method behavior modification at runtime, made easy.
 Author-email: Wind Rider <abcbcalol69@gmail.com>
 License: MIT License
@@ -186,7 +186,7 @@ harmonify.register_method_hook(
 )
 
 g = Game()
-assert g.player.health == 110   # Assume the player starts with 10 0HP
+assert g.player.health == 110   # Assume the player starts with 100HP
 ```
 
 
