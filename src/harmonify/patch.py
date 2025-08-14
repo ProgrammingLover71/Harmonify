@@ -4,7 +4,13 @@ from .injector import *
 import types
 
 
-class Patch():
+class Patch:
+	replace_valid: bool = True
+
+	@staticmethod
+	def no_replace(cls: "Patch"):
+		cls.replace_valid = False
+
 	"""A base class for creating patches to modify methods in classes."""
 
 	# Decorators for indicating the patch target location
@@ -136,6 +142,8 @@ def apply(patch: "Patch") -> bool:
 		inject_success = inject_function(patch_inject[0], patch_inject[1], patch_inject[2], patch_inject[3], patch_inject[4])
 	elif isinstance(patch_inject[0], type):
 		inject_success = inject_method(patch_inject[0], patch_inject[1], patch_inject[2], patch_inject[3], patch_inject[4])
+	elif patch_inject[0] is None:
+		pass
 	else:
 		raise TypeError("Invalid target for injection, must be a module or class.")
 

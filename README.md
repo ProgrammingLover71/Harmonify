@@ -156,6 +156,9 @@ assert g.player.health == 110   # Assume the player starts with 100HP
 
 # Changelog
 
+# 3.1.2
+Modify the `Patch` class to support the default `Patch.inject()` value (A.K.A. no injection).
+
 # 3.1.0
 Rewrote the patch class system to look more like Harmony's. <br>
 Added a general handler class, named `Harmonify`.
