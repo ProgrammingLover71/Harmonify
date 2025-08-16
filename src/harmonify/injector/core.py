@@ -4,10 +4,17 @@ import textwrap
 import types
 
 from .utils import *
-from .injector import security as sec
+from . import security as sec
 
 _func_injections = {}
 _method_injections = {}
+
+
+n = 0
+def new_id():
+	global n
+	n += 1
+	return n
 
 
 def inject_function(
@@ -25,7 +32,7 @@ def inject_function(
     Args:
         `target_module`: The module in which the targeted function exists.
         `function_name`: The name of the targeted function.
-        `insert_line`: The line number (relative to the function definition) where which the code will be injected.
+        `insert_line`: The line number (relative to the function definition) where the code will be injected.
         `insert_type`: The type of injection (before, after, or replace).
         `target_code`: The code snippet that will be injected (Replace injection works only if the code to inject is a single statement).
     """
@@ -51,21 +58,23 @@ def inject_function(
 
     new_function = namespace[function_name]
 
+    inj_id = new_id()
     # Keep track of the injection
-    inject_key = (target_module, function_name)
+    inject_key = (target_module, function_name, inj_id)
     inject_value = (target_function, new_function)
     if inject_key not in _func_injections:
         _func_injections[inject_key] = inject_value
 
     # Replace the function in its original spot
     setattr(target_module, function_name, new_function)
-    return True
+    return True, inj_id
 
 
 
 def undo_func_inject(
     target_module: types.ModuleType,
-    function_name: str
+    function_name: str,
+    id: int
 ):
     """
     Revert the injected function back to its original code.
@@ -73,12 +82,16 @@ def undo_func_inject(
     Args:
         `target_module`: The module where the targeted function exists.
         `function_name`: The name of the targeted function.
+        `id`: The ID of the injection.
     """
-    inject_key = (target_module, function_name)
+    if id is None:
+        return False
+    inject_key = (target_module, function_name, id)
     if inject_key in _func_injections:
         original_function = _func_injections[inject_key][0]
         setattr(target_module, function_name, original_function)
-    return True
+        return True
+    return False
 
 
 
@@ -97,7 +110,8 @@ def inject_method(
     Args:
         `target_module`: The module in which the targeted method exists.
         `method_name`: The name of the targeted method.
-        `insert_after_line`: The line number (relative to the method definition) after which the code will be injected.
+        `insert_line`: The line number (relative to the method definition) where the code will be injected.
+        `insert_type`: The type of injection (before, after, or replace).
         `target_code`: The code snippet that will be injected (Replace injection works only if the code to inject is a single statement).
     """
     target_method = getattr(target_class, method_name)
@@ -131,6 +145,7 @@ def inject_method(
     if is_classmethod: new_method = classmethod(new_method)
     elif is_staticmethod: new_method = staticmethod(new_method)
 
+    inj_id = new_id()
     # Keep track of the injection
     inject_key = (target_class, method_name)
     inject_value = (target_method, new_method)
@@ -139,13 +154,14 @@ def inject_method(
 
     # Replace the method in its original spot
     setattr(target_class, method_name, new_method)
-    return True
+    return True, inj_id
 
 
 
 def undo_method_inject(
     target_class: type,
-    method_name: str
+    method_name: str,
+    id: int
 ):
     """
     Revert the injected method back to its original code.
@@ -153,11 +169,15 @@ def undo_method_inject(
     Args:
         `target_class`: The class where the targeted method exists.
         `method_name`: The name of the targeted method.
+        `id`: The ID of the injection.
     """
-    inject_key = (target_class, method_name)
+    if id is None:
+        return False
+    inject_key = (target_class, method_name, id)
     if inject_key in _method_injections:
         original_method = _method_injections[inject_key][0]
         setattr(target_class, method_name, original_method)
-    return True
+        return True
+    return False
 
 

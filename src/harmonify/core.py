@@ -1,4 +1,4 @@
-from .flow_control import CONTINUE_EXEC, CONTINUE_WITHOUT_POSTFIX, STOP_EXEC
+from .flow_control import FlowControlError, CONTINUE_EXEC, CONTINUE_WITHOUT_POSTFIX, STOP_EXEC
 from .func_types import *
 import sys, inspect, types
 from .info_utils import *
@@ -21,7 +21,7 @@ def patch_method(
 	prefix:  "PrefixFnType  | None" = None, 
 	postfix: "PostfixFnType | None" = None, 
 	replace: "ReplaceFnType | None" = None
-) -> bool:
+) -> tuple[bool, int]:
 	"""
 	Patches a method of a class.
 
@@ -77,12 +77,12 @@ def patch_method(
 			bound_postfix = types.MethodType(postfix, instance)
 			modified_result = bound_postfix(result, *args, **kwds)
 			return modified_result
-			
-		return result
+
+		raise FlowControlError(flow_state)
 
 	# Replace the original method on the class
 	setattr(target_class, method_name, patched_method)
-	return True
+	return True, patch_key[2]
 	
 
 
@@ -92,7 +92,7 @@ def patch_function(
 	prefix:  "PrefixFnType  | None" = None,
 	postfix: "PostfixFnType | None" = None,
 	replace: "ReplaceFnType | None" = None
-) -> bool:
+) -> tuple[bool, int]:
 	"""
 	Patches a standalone function in a module.
 
@@ -127,15 +127,15 @@ def patch_function(
 		if postfix and flow_state == CONTINUE_EXEC:
 			modified_result = postfix(result, *args, **kwds)
 			return modified_result
-
-		return result
+		
+		raise FlowControlError(flow_state)
 
 	setattr(target_module, function_name, patched_function)
-	return True
+	return True, patch_key[2]
 
 
 
-def create_method(target_class: type, method_name: str, body: "ReplaceFnType") -> bool:
+def create_method(target_class: type, method_name: str, body: Callable[..., Any]) -> bool:
 	"""
 	Creates a new method on a class.
 	
@@ -144,9 +144,26 @@ def create_method(target_class: type, method_name: str, body: "ReplaceFnType") -
 		`method_name`: The name of the method that is being added.
 		`body`: The body of the method.
 	"""
-	# No need to actually do any bounding to classes (not that we have anything to bound *to* XD)
+	# No need to actually do any bounding to classes (not that we have any instance to bound to anyways :D)
 	# A normal setattr() works too!
+	if target_class is None: return False
 	setattr(target_class, method_name, body)
+	return True
+
+
+
+def create_function(target_module: type, function_name: str, body: Callable[..., Any]) -> bool:
+	"""
+	Creates a new function on a module.
+	
+	Args:
+		`target_module`: The module that the method is being added on.
+		`function_name`: The name of the function that is being added.
+		`body`: The body of the function.
+	"""
+	# A normal setattr() works too!
+	if target_module is None: return False
+	setattr(target_module, function_name, body)
 	return True
 	
 
@@ -160,6 +177,7 @@ def delete_method(target_class: type, method_name: str) -> bool:
 		`method_name`: The name of the method that is being deleted.
 	"""
 	# deleting is as simple as a delattr() call
+	if target_class is None: return False
 	delattr(target_class, method_name)
 	return True
 
@@ -174,12 +192,13 @@ def delete_function(target_module: types.ModuleType, function_name: str) -> bool
 		`function_name`: The name of the function that is being deleted.
 	"""
 	# deleting is as simple as a delattr() call
+	if target_module is None: return False
 	delattr(target_module, function_name)
 	return True
 
 
 
-def unpatch_method(target_class: type, method_name: str = "__init__", index: int = 1) -> bool:
+def unpatch_method(target_class: type, method_name: str, index: int = 1) -> bool:
 	"""
 	Restores a patched method to its original state.
 	"""

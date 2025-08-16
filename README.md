@@ -156,20 +156,24 @@ assert g.player.health == 110   # Assume the player starts with 100HP
 
 # Changelog
 
-# 3.1.2
+## 3.2.0
+Added an API reference/documentation, stored in `DOCS.md`. <br>
+Fix typos throughout the library and remove the `Harmonify` handler class.
+
+## 3.1.2
 Modify the `Patch` class to support the default `Patch.inject()` value (A.K.A. no injection).
 
-# 3.1.0
+## 3.1.0
 Rewrote the patch class system to look more like Harmony's. <br>
 Added a general handler class, named `Harmonify`.
 
-# 3.0.0
+## 3.0.0
 Reverted to the old injector, while also cleaning it up.
 This is because the new injector was too messy and had too many bugs. <br>
 Changed some names in the injector module to make more sense. <br>
 Allow hooks to use *ID*s instead of numbers when calling hooks.
 
-# 2.0.0
+## 2.0.0
 Final fix made regarding import syntax.
 
 ## 2.0.0 (Release Candidate 2)

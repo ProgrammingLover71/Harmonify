@@ -6,7 +6,6 @@ src/harmonify/context.py
 src/harmonify/core.py
 src/harmonify/flow_control.py
 src/harmonify/func_types.py
-src/harmonify/handler.py
 src/harmonify/hook.py
 src/harmonify/info_utils.py
 src/harmonify/patch.py

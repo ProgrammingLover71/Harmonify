@@ -11,6 +11,12 @@ class InsertType:
 
 
 
+class InsertError(Exception):
+    def __init__(self, loc):
+        super().__init__(f"Invalid insert location: {loc}")
+
+
+
 class CodeInjector(ast.NodeTransformer):
     """
     A class to inject code into a function at a specific line number.
@@ -21,6 +27,8 @@ class CodeInjector(ast.NodeTransformer):
         self.target_code = target_code
         self.insert_line = insert_line
         self.insert_type = insert_type
+        if insert_type not in [InsertType.BEFORE_TARGET, InsertType.AFTER_TARGET, InsertType.REPLACE_TARGET]:
+            raise InsertError(insert_type)
 
     def visit_FunctionDef(self, node):
         new_node = self.generic_visit(node)

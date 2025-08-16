@@ -8,8 +8,16 @@ class Patch:
 	replace_valid: bool = True
 
 	@staticmethod
-	def no_replace(cls: "Patch"):
-		cls.replace_valid = False
+	def set_replace(replace_valid: bool = True):
+		"""
+		Decorator to specify the whether the `replace` patch is valid.
+		Args:
+			`replace_valid`: Whether the `apply` function uses `replace` instead of the other patches.
+		"""
+		def decorator(cls: "Patch"):
+			cls.replace_valid = replace_valid
+			return cls
+		return decorator
 
 	"""A base class for creating patches to modify methods in classes."""
 
@@ -29,11 +37,11 @@ class Patch:
 		return decorator
 
 	# All patch functions
-	def prefix(self, *args, **kwds) -> tuple[Any, list, dict, str]:
+	def prefix(self, obj_self, *args, **kwds) -> tuple[Any, list, dict, str]:
 		"""
 		Prefix function to be called before the main method execution.
 		Args:
-			`self`: The instance of the class (if applicable).
+			`obj_self`: The instance of the class (if applicable).
 			`args`: Positional arguments passed to the method.
 			`kwds`: Keyword arguments passed to the method.
 
@@ -45,11 +53,11 @@ class Patch:
 				- A string indicating the flow control action (e.g., CONTINUE_EXEC, CONTINUE_WITHOUT_POSTFIX, STOP_EXEC)."""
 		return None, args, kwds, 'continue'
 
-	def postfix(self, call_result, *args, **kwds) -> Any:
+	def postfix(self, obj_self, call_result, *args, **kwds) -> Any:
 		"""
 		Postfix function to be called after the main method execution.
 		Args:
-			`self`: The instance of the class (if applicable).
+			`obj_self`: The instance of the class (if applicable).
 			`call_result`: The result of the main method execution.
 			`args`: Positional arguments passed to the method.
 			`kwds`: Keyword arguments passed to the method.
@@ -59,31 +67,13 @@ class Patch:
 		"""
 		return call_result
 	
-	def replace(self, *args, **kwds) -> Any:
+	def replace(self, obj_self, *args, **kwds) -> Any:
 		"""
 		Replacement function to be called instead of the main method.
 		Args:
 			`self`: The instance of the class (if applicable).
 			`args`: Positional arguments passed to the method.
 			`kwds`: Keyword arguments passed to the method.
-		"""
-		pass
-
-	def create(self) -> tuple[str, "ReplaceFnType"]:
-		"""
-		Creates a new method to be added to the class.
-		Returns:
-			A tuple containing
-				- The name of the new method to be created.
-				- The function that will be used as the new method.
-		"""
-		pass
-
-	def delete(self) -> str:
-		"""
-		Deletes a method from the class.
-		Returns:
-			The name of the deleted method.
 		"""
 		pass
 
@@ -108,8 +98,6 @@ def apply(patch: "Patch") -> bool:
 		
 	Args:
 		`patch`: The `Patch` that is to be applied.
-		`target`: The class whose method is to be patched. If not provided, it defaults to "__init__".
-		`target_name`: The name of the method to be patched. (as a string)
 	"""
 	target = patch._target_class
 	target_name = patch._target_name
@@ -118,8 +106,6 @@ def apply(patch: "Patch") -> bool:
 	patch_prefix = patch.prefix
 	patch_postfix = patch.postfix
 	patch_replace = patch.replace
-	patch_create = patch.create()
-	patch_delete = patch.delete()
 	patch_inject = patch.inject()
 	# Apply the main patch(es)
 	# If the `replace` patch is marked as valid, it will be applied
@@ -127,14 +113,6 @@ def apply(patch: "Patch") -> bool:
 		patch_success = patch_method(target, target_name, replace=patch_replace)
 	else:
 		patch_success = patch_method(target, target_name, patch_prefix, patch_postfix)
-
-	create_success = True
-	delete_success = True
-	# Apply the creation/deletion patch(es)
-	if patch_create[1]:
-		create_success = create_method(target, patch_create[0], patch_create[1])
-	if patch_delete:
-		delete_success = delete_method(target, patch_delete)
 
 	# Apply the injection patch
 	inject_success = True
@@ -148,4 +126,4 @@ def apply(patch: "Patch") -> bool:
 		raise TypeError("Invalid target for injection, must be a module or class.")
 
 	# Return true if all patches succeed
-	return patch_success and create_success and delete_success and inject_success
+	return patch_success and inject_success

@@ -16,15 +16,13 @@ class PatchManager:
             callable_name: str, 
             prefix: PrefixFnType | None = None, 
             postfix: PostfixFnType | None = None,
-            replace: ReplaceFnType | None = None,
-            create: ReplaceFnType | None = None
+            replace: ReplaceFnType | None = None
         ):
         self.target = target
         self.callable_name = callable_name
         self.prefix = prefix
         self.postfix = postfix
         self.replace = replace
-        self.create = create
     
     def __enter__(self):
         if isinstance(self.target, types.ModuleType):
@@ -41,8 +39,7 @@ class PatchManager:
                 self.callable_name,
                 prefix=self.prefix,
                 postfix=self.postfix,
-                replace=self.replace,
-                create=self.create
+                replace=self.replace
             )
         return self
 
@@ -65,12 +62,14 @@ class InjectManager:
             self,
             target: types.ModuleType | type,
             callable_name: str,
-            inject_after_line: int = 0,
+            insert_line: int,
+            insert_type: int,
             code_to_inject: str | None = None
         ):
         self.target = target
         self.callable_name = callable_name
-        self.inject_after_line = inject_after_line
+        self.insert_line = insert_line
+        self.insert_type = insert_type
         self.code_to_inject = code_to_inject
     
     def __enter__(self):
@@ -78,14 +77,16 @@ class InjectManager:
             inject_function(
                 self.target,
                 self.callable_name,
-                self.inject_after_line,
+                self.insert_line,
+                self.insert_type,
                 self.code_to_inject
             )
         elif isinstance(self.target, type):
             inject_method(
                 self.target,
                 self.callable_name,
-                self.inject_after_line,
+                self.insert_line,
+                self.insert_type,
                 self.code_to_inject
             )
         return self
@@ -109,21 +110,70 @@ class HookManager:
             self,
             target: types.ModuleType | type,
             callable_name: str,
-            hook_callback: typing.Callable
+            hook_callback: typing.Callable,
+            hook_id: str
         ):
         self.target = target
         self.callable_name = callable_name
         self.hook_callback = hook_callback
+        self.hook_id = hook_id
     
     def __enter__(self):
         if isinstance(self.target, types.ModuleType):
-            register_function_hook(self.target, self.callable_name, self.hook_callback)
+            register_function_hook(self.target, self.callable_name, self.hook_callback, self.hook_id)
         elif isinstance(self.target, type):
-            register_method_hook(self.target, self.callable_name, self.hook_callback)
+            register_method_hook(self.target, self.callable_name, self.hook_callback, self.hook_id)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         if isinstance(self.target, types.ModuleType):
-            remove_function_hook(self.target, self.callable_name, self.hook_callback)
+            remove_function_hook(self.target, self.callable_name, self.hook_callback, self.hook_id)
         elif isinstance(self.target, type):
-            remove_method_hook(self.target, self.callable_name, self.hook_callback)
+            remove_method_hook(self.target, self.callable_name, self.hook_callback, self.hook_id)
+
+
+
+def apply_patch(
+    target: types.ModuleType | type,
+    callable_name: str,
+    prefix: PrefixFnType | None = None,
+    postfix: PostfixFnType | None = None,
+    replace: ReplaceFnType | None = None
+) -> PatchManager:
+    return PatchManager(
+        target,
+        callable_name,
+        prefix=prefix,
+        postfix=postfix,
+        replace=replace
+    )
+
+
+def apply_inject(
+    target: types.ModuleType | type,
+    callable_name: str,
+    insert_line: int,
+    insert_type: int,
+    code_to_inject: str | None = None
+) -> InjectManager:
+    return InjectManager(
+        target,
+        callable_name,
+        insert_line=insert_line,
+        insert_type=insert_type,
+        code_to_inject=code_to_inject
+    )
+
+
+def add_hook(
+    target: types.ModuleType | type,
+    callable_name: str,
+    hook_callback: typing.Callable,
+    hook_id: str
+) -> HookManager:
+    return HookManager(
+        target,
+        callable_name,
+        hook_callback,
+        hook_id
+    )

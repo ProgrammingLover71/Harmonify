@@ -4,3 +4,8 @@ CONTINUE_EXEC = "continue"
 CONTINUE_WITHOUT_POSTFIX = "continue_npf"
 # Don't execute anything else
 STOP_EXEC = "stop"
+
+
+class FlowControlError(Exception):
+    def __init__(self, state):
+        super.__init__(f"Flow control state is not valid: {state}")
