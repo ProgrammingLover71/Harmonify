@@ -156,6 +156,9 @@ assert g.player.health == 110   # Assume the player starts with 100HP
 
 # Changelog
 
+## 3.2.1
+Added documentation for the `info_utils` module and the `core.get_function_patches()` / `core.get_method_patches()` functions.
+
 ## 3.2.0
 Added an API reference/documentation, stored in `DOCS.md`. <br>
 Fix typos throughout the library and remove the `Harmonify` handler class.

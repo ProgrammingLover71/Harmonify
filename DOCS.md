@@ -203,6 +203,18 @@ def find_and_apply_patches(mod = None):
 <br>
 <br>
 
+### Function: `harmonify.core.get_funcrion_patches()`
+- Returns: a `list[info_utils.PatchInfo]` containing every single patch that has been applied to any function on a module.
+
+<br>
+<br>
+
+### Function: `harmonify.core.get_method_patches()`
+- Returns: a `list[info_utils.PatchInfo]` containing every single patch that has been applied to any method on a class.
+
+<br>
+<br>
+
 # Module: `harmonify.flow_control`
 
 ### Constant: `harmonify.flow_control.CONTINUE_EXEC`
@@ -711,4 +723,14 @@ Returns a context manager for easily managing hooks.
 
 <br>
 <br>
-    
+
+<br>
+<br>
+
+# Module: `harmonify.info_utils`
+
+### Class: `harmonify.info_utils.PatchInfo`
+Holds information about a patch. Instances of this class are returned only by `harmonify.core.get_function_patches()` and `harmonify.core.get_method_patches()`.
+
+<br>
+<br>
